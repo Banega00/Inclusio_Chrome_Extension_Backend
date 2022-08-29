@@ -1,17 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import CustomError from "../errors/CustomError";
-import { ExampleService } from "../services/example.service";
+import { UserService } from "../services/user.service";
 import { ErrorStatusCode, SuccessStatusCode } from "../status-codes";
 import Logger from "../utils/Logger";
 import { sendResponse } from "../utils/response-wrapper";
 import * as DTO from '../models/dto'
-export class ExampleController {
+export class UserController {
     private logger: Logger;
-    private exampleService: ExampleService;
+    private userService: UserService;
 
     constructor() {
         this.logger = new Logger(this.constructor.name)
-        this.exampleService = new ExampleService();
+        this.userService = new UserService();
 
     }
 
@@ -19,6 +19,8 @@ export class ExampleController {
         const data: DTO.Request.RegisterUser = request.body;
 
         this.logger.debug("REGISTER USER PAYLOAD", data)
+
+        sendResponse({status:200, code: SuccessStatusCode.Success, response})
     }
 
     //If you wrapped middleware function with error wrapper - there is no need to use try/catch at top level
@@ -30,7 +32,7 @@ export class ExampleController {
         //this error goes to errorWrapper -> errorHandler
         throw new CustomError({code:ErrorStatusCode.UNKNOWN_ERROR, message:'Test error!'})
 
-        const serviceResponse = this.exampleService.exampleMethod(data);
+        const serviceResponse = this.userService.exampleMethod(data);
 
         sendResponse({ response, status: 200, code: SuccessStatusCode.Success });
 
@@ -39,7 +41,7 @@ export class ExampleController {
     testHttpMiddleware = async (request: Request, response: Response, next: NextFunction) => {
         const data: any = request.body;
 
-        const serviceResponse = await this.exampleService.testHttpMiddleware(data);
+        const serviceResponse = await this.userService.testHttpMiddleware(data);
 
         sendResponse({ response, status: 200, code: SuccessStatusCode.Success, payload: serviceResponse });
     }

@@ -3,7 +3,7 @@ import Logger from "../utils/Logger"
 
 //This is Service
 //Its responsibility is to execute specific functions without knowledge of request, and response objects
-export class ExampleService{
+export class UserService{
 
     private logger:Logger;
     private httper: Httper;

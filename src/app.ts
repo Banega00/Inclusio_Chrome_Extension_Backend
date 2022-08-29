@@ -10,8 +10,7 @@ import { router } from "./routes/router";
 import path from 'path'
 import { errorWrapper } from "./utils/error-wrapper";
 import { sendResponse } from "./utils/response-wrapper";
-import { ErrorStatusCode, SuccessStatusCode } from "./status-codes";
-import CustomError from "./errors/CustomError";
+import { SuccessStatusCode } from "./status-codes";
 
 const logger = new Logger('App');
 
@@ -30,11 +29,14 @@ app.use(errorWrapper((request: Request, response: Response, next: NextFunction) 
     next();
 }))
 
+
 //Logger for logging express route
 app.use(errorWrapper((request: Request, response: Response, next: NextFunction) => {
     logger.info(`Start of Request: ${httpContext.get('route')}`)
     next();
 }))
+
+app.use('/health', (request, response) => sendResponse({response, status: 200, message: 'Server alive', code: SuccessStatusCode.Success}))
 
 app.use(errorWrapper(validateRequestPayload));
 

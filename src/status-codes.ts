@@ -4,6 +4,8 @@ export enum ErrorStatusCode {
     USER_ALREADY_EXISTS = 10002,
     USER_NOT_FOUND = 10003,
     INVALID_PASSWORD = 10004,
+    MISSING_JWT = 10005,
+    INVALID_JWT = 10006,
 }
 
 export enum SuccessStatusCode {
@@ -19,7 +21,9 @@ const ErrorStatusCodeDescription: { [key: number]: string } = {
     10001: "Invalid request payload",
     10002: "User already exists",
     10003: "User not found",
-    10004: "Invalid password"
+    10004: "Invalid password",
+    10005: "Missing token",
+    10006: "Invalid token"
 }
 
 const SuccessStatusCodeDescription: { [key: number]: string } = {

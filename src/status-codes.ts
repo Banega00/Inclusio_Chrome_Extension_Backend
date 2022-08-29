@@ -1,6 +1,7 @@
 export enum ErrorStatusCode {
     UNKNOWN_ERROR = 10000,
     VALIDATION_ERROR = 10001,
+    USER_ALREADY_EXISTS = 10002
 }
 
 export enum SuccessStatusCode {

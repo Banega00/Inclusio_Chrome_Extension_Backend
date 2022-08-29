@@ -18,7 +18,17 @@ export class UserController {
     registerUser = async (request: Request, response: Response, next: NextFunction) => {
         const data: DTO.Request.RegisterUser = request.body;
 
-        this.logger.debug("REGISTER USER PAYLOAD", data)
+        this.logger.debug("Registering user")
+
+        await this.userService.registerUser(data.username, data.password, data.role)
+
+        sendResponse({response, status:201, code: SuccessStatusCode.Success, message: `User successfully registered`})
+    }
+
+    loginUser = async (request: Request, response: Response, next: NextFunction) => {
+        const data: DTO.Request.LoginUser = request.body;
+
+        this.logger.debug("Login USER PAYLOAD", data)
 
         sendResponse({status:200, code: SuccessStatusCode.Success, response})
     }

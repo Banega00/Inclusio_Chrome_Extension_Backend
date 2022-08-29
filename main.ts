@@ -4,6 +4,7 @@ config();
 import { createServer } from "http";
 import { DataSource } from "typeorm";
 import app from "./src/app";
+import { UserEntity } from "./src/models/entities/User.entity";
 import { env } from "./src/utils/env-wrapper";
 import Logger from "./src/utils/Logger";
 
@@ -19,7 +20,7 @@ export const dataSource = new DataSource({
     database: env.pg.database,
     synchronize: env.orm.synchronize,
     logging: env.orm.logging,
-    entities: []
+    entities: [UserEntity]
   });
 
 (async function main(): Promise<void> {

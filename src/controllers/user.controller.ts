@@ -28,7 +28,7 @@ export class UserController {
     loginUser = async (request: Request, response: Response, next: NextFunction) => {
         const data: DTO.Request.LoginUser = request.body;
 
-        this.logger.debug("Login USER PAYLOAD", data)
+        await this.userService.loginUser(data.username, data.password)
 
         sendResponse({status:200, code: SuccessStatusCode.Success, response})
     }

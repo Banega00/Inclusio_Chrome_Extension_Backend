@@ -24,7 +24,7 @@ export class UserService{
     }
 
     registerUser = async (username: string, password: string, role: UserRole) => {
-        
+
         const user = await this.userRepository.findOne({username})
 
         if(user) throw new CustomError({message: `User with username ${username} already exists`, status: 400, code: ErrorStatusCode.USER_ALREADY_EXISTS});
@@ -39,8 +39,18 @@ export class UserService{
 
     }
 
-    loginUser = (username: string, password: string) => {
+    loginUser = async (username: string, password: string) => {
 
+        const user = await this.userRepository.findOne({username})
+
+        if(!user) throw new CustomError({message:`User ${username} does not exists`, status: 400, code: ErrorStatusCode.USER_NOT_FOUND})
+    
+        const hashedPassword = hash(password);
+
+        if(user.password === hashedPassword) return true;
+        else{
+            throw new CustomError({message:'Invalid password', status: 400, code: ErrorStatusCode.INVALID_PASSWORD})
+        }
     }
 
     //If you want to return error response from here, just throw an error which will be handled in middleware's try/catch

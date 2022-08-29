@@ -3,8 +3,8 @@ import { UserRole } from "../../UserRole.enum";
 
 //validation schema
 export const registerUserValidationSchema = Zod.object({
-    username: Zod.string(),
-    password: Zod.string(),
+    username: Zod.string().min(1),
+    password: Zod.string().min(1),
     role: Zod.nativeEnum(UserRole),
 })
 

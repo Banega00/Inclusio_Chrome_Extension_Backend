@@ -26,9 +26,7 @@ export class UserController {
 
         const jwt = jsonwebtoken.sign({ id: user.id, username: user.username, role: user.role }, env.jwt_secret);
 
-        response.cookie('token',jwt);
-
-        sendResponse({response, status:201, code: SuccessStatusCode.Success, message: `User successfully registered`})
+        sendResponse({response, status:201, code: SuccessStatusCode.Success, message: `User successfully registered`, payload: {token: jwt}})
     }
 
     loginUser = async (request: Request, response: Response, next: NextFunction) => {
@@ -38,9 +36,9 @@ export class UserController {
 
         const jwt = jsonwebtoken.sign({ id: user.id, username: user.username, role: user.role }, env.jwt_secret);
 
-        response.cookie('token',jwt);
+        response.cookie('token',jwt,{ maxAge: 1000 * 60 * 60 * 24, httpOnly: false });
 
-        sendResponse({status:200, code: SuccessStatusCode.Success, response})
+        sendResponse({status:200, code: SuccessStatusCode.Success, response, payload: {token: jwt}})
     }
 
     //If you wrapped middleware function with error wrapper - there is no need to use try/catch at top level

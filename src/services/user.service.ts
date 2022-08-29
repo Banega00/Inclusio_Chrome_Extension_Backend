@@ -37,6 +37,7 @@ export class UserService{
 
         this.logger.info('New user successfully registered', {id: newUser.id, username: newUser.username, role: newUser.role})
 
+        return newUser;
     }
 
     loginUser = async (username: string, password: string) => {
@@ -47,7 +48,7 @@ export class UserService{
     
         const hashedPassword = hash(password);
 
-        if(user.password === hashedPassword) return true;
+        if(user.password === hashedPassword) return user;
         else{
             throw new CustomError({message:'Invalid password', status: 400, code: ErrorStatusCode.INVALID_PASSWORD})
         }

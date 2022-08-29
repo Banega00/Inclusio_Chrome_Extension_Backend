@@ -5,6 +5,8 @@ import { ErrorStatusCode, SuccessStatusCode } from "../status-codes";
 import Logger from "../utils/Logger";
 import { sendResponse } from "../utils/response-wrapper";
 import * as DTO from '../models/dto'
+import jsonwebtoken from 'jsonwebtoken'
+import { env } from "../utils/env-wrapper";
 export class UserController {
     private logger: Logger;
     private userService: UserService;
@@ -20,7 +22,11 @@ export class UserController {
 
         this.logger.debug("Registering user")
 
-        await this.userService.registerUser(data.username, data.password, data.role)
+        const user = await this.userService.registerUser(data.username, data.password, data.role)
+
+        const jwt = jsonwebtoken.sign({ id: user.id, username: user.username, role: user.role }, env.jwt_secret);
+
+        response.cookie('token',jwt);
 
         sendResponse({response, status:201, code: SuccessStatusCode.Success, message: `User successfully registered`})
     }
@@ -28,7 +34,11 @@ export class UserController {
     loginUser = async (request: Request, response: Response, next: NextFunction) => {
         const data: DTO.Request.LoginUser = request.body;
 
-        await this.userService.loginUser(data.username, data.password)
+        const user = await this.userService.loginUser(data.username, data.password)
+
+        const jwt = jsonwebtoken.sign({ id: user.id, username: user.username, role: user.role }, env.jwt_secret);
+
+        response.cookie('token',jwt);
 
         sendResponse({status:200, code: SuccessStatusCode.Success, response})
     }

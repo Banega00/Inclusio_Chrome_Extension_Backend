@@ -14,6 +14,8 @@ class EnvWrapper {
         database: this.getProperty("pg_db_name"),
     }
 
+    public jwt_secret = this.getProperty("jwt_secret")
+
     public orm = {
         synchronize: this.toBoolean(this.getProperty("orm_synchronize")),
         logging: this.toBoolean(this.getProperty("orm_logging"))

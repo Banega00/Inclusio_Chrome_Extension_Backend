@@ -15,7 +15,9 @@ export class JWTService{
         if(!jwt) throw new CustomError({message:"Missing authorization cookie", code: ErrorStatusCode.MISSING_JWT, status: 401})
         
         try{
-            const jwtPayload = jsonwebtoken.verify(jwt, env.jwt_secret);
+            const jwtPayload = jsonwebtoken.verify(jwt, env.jwt_secret) as jsonwebtoken.JwtPayload;
+
+            response.locals.user = { id: jwtPayload.id, username: jwtPayload.username, role: jwtPayload.role}
         }catch(error){
             if (error instanceof jsonwebtoken.JsonWebTokenError) {
                 throw new CustomError({message:"Invalid authorization cookie", code: ErrorStatusCode.INVALID_JWT, status: 401})

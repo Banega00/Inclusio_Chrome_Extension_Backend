@@ -31,4 +31,10 @@ export class PageRepository extends BaseRepository<PageEntity>{
     async delete(entity: PageEntity, entityManager?: EntityManager | undefined): Promise<PageEntity> {
         throw new Error("Method not implemented.");
     }
+
+    async save(entity: PageEntity, entityManager?: EntityManager | undefined): Promise<PageEntity> {
+        const manager = entityManager ?? dataSource.manager;
+        await manager.save(entity);
+        return entity;
+    }
 }

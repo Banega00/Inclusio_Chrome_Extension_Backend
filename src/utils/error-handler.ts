@@ -7,7 +7,6 @@ import { sendResponse } from "./response-wrapper";
 
 const logger = new Logger('Error');
 export const errorHandler = (error: Error, request: Request, response: Response, nextFunction: NextFunction) => {
-    logger.error('Error', error);
     
     if(error instanceof CustomError){
         logger.error(error.message, {...error})

@@ -4,7 +4,7 @@ import { env } from "./env-wrapper";
 
 const myFormat = winston.format.printf(({ level, message, timestamp, data, ip, reqId, ...metadata }) => {
     let msg = `${timestamp} | ${reqId ?? ''} | ${level} | ${metadata.label ?? ''} | ${message} `
-    
+
     if (data) {
         msg += '\n'+data
     }

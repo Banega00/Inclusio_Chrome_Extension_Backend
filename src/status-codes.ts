@@ -6,6 +6,8 @@ export enum ErrorStatusCode {
     INVALID_PASSWORD = 10004,
     MISSING_JWT = 10005,
     INVALID_JWT = 10006,
+    UNAUTHORIZED = 10007,
+    PAGE_NOT_FOUND = 10008,
 }
 
 export enum SuccessStatusCode {
@@ -23,7 +25,9 @@ const ErrorStatusCodeDescription: { [key: number]: string } = {
     10003: "User not found",
     10004: "Invalid password",
     10005: "Missing token",
-    10006: "Invalid token"
+    10006: "Invalid token",
+    10007: "Unauthorized",
+    10008: "Page not found"
 }
 
 const SuccessStatusCodeDescription: { [key: number]: string } = {

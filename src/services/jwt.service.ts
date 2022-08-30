@@ -10,9 +10,9 @@ const logger:Logger = new Logger('JWT Service');
 export class JWTService{
     
     public static authorizeJWT = (request: Request, response: Response, next: NextFunction)=>{
-        const jwt = request.cookies.token;
+        const jwt = request.headers.authorization;
 
-        if(!jwt) throw new CustomError({message:"Missing authorization cookie", code: ErrorStatusCode.MISSING_JWT, status: 401})
+        if(!jwt) throw new CustomError({message:"Missing authorization token", code: ErrorStatusCode.MISSING_JWT, status: 401})
         
         try{
             const jwtPayload = jsonwebtoken.verify(jwt, env.jwt_secret) as jsonwebtoken.JwtPayload;
@@ -20,7 +20,7 @@ export class JWTService{
             response.locals.user = { id: jwtPayload.id, username: jwtPayload.username, role: jwtPayload.role}
         }catch(error){
             if (error instanceof jsonwebtoken.JsonWebTokenError) {
-                throw new CustomError({message:"Invalid authorization cookie", code: ErrorStatusCode.INVALID_JWT, status: 401})
+                throw new CustomError({message:"Invalid authorization token", code: ErrorStatusCode.INVALID_JWT, status: 401})
             }
             throw error;
         }

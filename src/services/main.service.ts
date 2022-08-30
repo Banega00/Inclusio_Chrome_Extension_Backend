@@ -4,15 +4,17 @@ import { PageStatus } from "../models/PageStatus.enum";
 import { PageRepository } from "../repository/page.repository";
 import { UserRepository } from "../repository/user.repository";
 import { ErrorStatusCode } from "../status-codes";
+import Logger from "../utils/Logger";
 
 export class MainService{
 
     private pageRepository: PageRepository;
     private userRepository: UserRepository;
-
+    private logger: Logger;
     constructor() {
         this.pageRepository = new PageRepository();
         this.userRepository = new UserRepository();
+        this.logger = new Logger();
     }
 
     insertOrUpdatePage = async (pageUrl: string, altText: {[img_src: string]: string})=>{
@@ -35,6 +37,7 @@ export class MainService{
         if(!page) throw new CustomError({code: ErrorStatusCode.PAGE_NOT_FOUND, status: 404, message: 'Page not found', payload: { pageUrl }})
         
         let requested = false
+        this.logger.debug("Page", page)
         if(page?.requests && username){
             requested = page.requests.some(request => request.username == username);
         }

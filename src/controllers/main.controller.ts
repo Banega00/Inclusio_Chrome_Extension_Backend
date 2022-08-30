@@ -32,7 +32,7 @@ export class MainController{
     getPage = async (request: Request, response: Response) =>{
         const data: DTO.Request.GetPage = request.body;
 
-        this.logger.debug('Getting page...',{pageUrl: data.pageUrl})
+        this.logger.debug(`Getting page ${data.pageUrl}`)
         const {page, requested} = await this.mainService.getPage(data.pageUrl, data.username);
 
         if(page) this.logger.debug(`Page found - id: ${page.id}`)

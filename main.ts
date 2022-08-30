@@ -5,7 +5,7 @@ import { createServer } from "http";
 import { DataSource } from "typeorm";
 import app from "./src/app";
 import { UserEntity } from "./src/models/entities/User.entity";
-import { PageEntity } from "./src/models/Page.entity";
+import { PageEntity } from "./src/models/entities/Page.entity";
 import { env } from "./src/utils/env-wrapper";
 import Logger from "./src/utils/Logger";
 

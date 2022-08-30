@@ -35,6 +35,8 @@ export class MainController{
         this.logger.debug('Getting page...',{pageUrl: data.pageUrl})
         const page = await this.mainService.getPage(data.pageUrl);
 
+        if(page) this.logger.debug(`Page found - id: ${page.id}`)
+        
         sendResponse({response, code: SuccessStatusCode.Success, status: 200, payload: page})
     }
 }

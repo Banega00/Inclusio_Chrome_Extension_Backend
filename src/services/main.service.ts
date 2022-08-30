@@ -1,5 +1,5 @@
 import CustomError from "../errors/CustomError";
-import { PageEntity } from "../models/Page.entity";
+import { PageEntity } from "../models/entities/Page.entity";
 import { PageRepository } from "../repository/page.repository";
 import { ErrorStatusCode } from "../status-codes";
 

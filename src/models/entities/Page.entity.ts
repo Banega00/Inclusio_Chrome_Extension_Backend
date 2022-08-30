@@ -1,4 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { PageStatus } from "../PageStatus.enum";
+import { UserRole } from "../UserRole.enum";
 
 @Entity()
 export class PageEntity {
@@ -13,6 +15,9 @@ export class PageEntity {
     images_alt_text:{
         [image_src: string]: string;
     }
+
+    @Column({type: 'enum', enum: PageStatus, nullable: true})
+    status: PageStatus;
 
     @CreateDateColumn()
     created_at: Date;

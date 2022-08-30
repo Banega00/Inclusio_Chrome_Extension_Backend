@@ -1,6 +1,6 @@
 import { EntityManager } from "typeorm";
 import { dataSource } from "../../main";
-import { PageEntity } from "../models/Page.entity";
+import { PageEntity } from "../models/entities/Page.entity";
 import { BaseRepository } from "./base.repository";
 
 export class PageRepository extends BaseRepository<PageEntity>{

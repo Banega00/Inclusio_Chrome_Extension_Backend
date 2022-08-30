@@ -14,8 +14,9 @@ export class PageRepository extends BaseRepository<PageEntity>{
         await manager.save(entity);
         return entity;
     }
-    async find(filter: any, entityManager?: EntityManager | undefined): Promise<PageEntity> {
-        throw new Error("Method not implemented.");
+    async find(filter: any, entityManager?: EntityManager | undefined, options?: any): Promise<PageEntity[]> {
+        const manager = entityManager ?? dataSource.manager;
+        return await manager.find(PageEntity, {where: filter, ...options})
     }
 
     async findOne(filter: any, entityManager?: EntityManager | undefined, options?: any): Promise<PageEntity | undefined>  {

@@ -16,7 +16,7 @@ export class UserRepository extends BaseRepository<UserEntity>{
         await manager.save(entity);
         return entity;
     }
-    async find(filter: any, entityManager?: EntityManager | undefined): Promise<UserEntity> {
+    async find(filter: any, entityManager?: EntityManager | undefined): Promise<UserEntity[]> {
         throw new Error("Method not implemented.");
     }
 

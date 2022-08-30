@@ -51,4 +51,13 @@ export class MainController{
 
         sendResponse({response, code: SuccessStatusCode.Success, status: 200})
     }
+
+    getRequestedPages = async (request: Request, response: Response) =>{
+
+        if(!response.locals.user || response.locals.user.role != 'Volunteer' ) throw new CustomError({message:"Forbidden", code: ErrorStatusCode.UNAUTHORIZED, status: 401})
+
+        const pages = await this.mainService.getRequestedPages();
+
+        sendResponse({response, status:200, code: SuccessStatusCode.Success, payload: pages})
+    }
 }

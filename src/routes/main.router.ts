@@ -11,3 +11,4 @@ mainRouter.post('/page', errorWrapper(mainController.getPage))
 mainRouter.put('/page', errorWrapper(JWTService.authorizeJWT), errorWrapper(mainController.insertOrUpdatePage))
 
 mainRouter.post('/request-page', errorWrapper(JWTService.authorizeJWT), errorWrapper(mainController.requestPageForProcessing))
+mainRouter.get('/requested-pages', errorWrapper(JWTService.authorizeJWT), errorWrapper(mainController.getRequestedPages))

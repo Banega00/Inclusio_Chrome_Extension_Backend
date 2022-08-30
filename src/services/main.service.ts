@@ -7,7 +7,6 @@ import { ErrorStatusCode } from "../status-codes";
 import Logger from "../utils/Logger";
 
 export class MainService{
-
     private pageRepository: PageRepository;
     private userRepository: UserRepository;
     private logger: Logger;
@@ -67,6 +66,22 @@ export class MainService{
             await this.userRepository.save(user),
             await this.pageRepository.save(page)
         ])
+    }
+
+
+    getRequestedPages = async ()=>{
+        const pages = await this.pageRepository.find({}, undefined, {relations: ['requests']});
+
+        const requestedPages:{page: PageEntity, requests: number}[] = [];
+        pages.forEach(page=>{
+            if(page.requests && page.requests.length > 0){
+                const pageRequests = page.requests.length;
+                page.requests = []
+                requestedPages.push({page, requests: pageRequests})
+            }
+        })
+
+        return requestedPages;
     }
 
     

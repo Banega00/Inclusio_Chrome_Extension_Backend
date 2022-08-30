@@ -7,5 +7,5 @@ export const mainRouter = Router();
 
 const mainController = new MainController();
 
+mainRouter.post('/page', errorWrapper(mainController.getPage))
 mainRouter.put('/page', errorWrapper(JWTService.authorizeJWT), errorWrapper(mainController.insertOrUpdatePage))
-mainRouter.get('/page', errorWrapper(mainController.getPage))

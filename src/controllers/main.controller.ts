@@ -4,16 +4,18 @@ import * as DTO from '../models/dto'
 import { UserRole } from "../models/UserRole.enum";
 import { MainService } from "../services/main.service";
 import { ErrorStatusCode, SuccessStatusCode } from "../status-codes";
+import Logger from "../utils/Logger";
 import { sendResponse } from "../utils/response-wrapper";
 
 
 export class MainController{
     
     private mainService:MainService;
-
+    private logger: Logger;
 
     constructor() {
         this.mainService = new MainService();
+        this.logger = new Logger('MainController')
     }
 
     insertOrUpdatePage = async (request: Request, response: Response) =>{
@@ -30,6 +32,7 @@ export class MainController{
     getPage = async (request: Request, response: Response) =>{
         const data: DTO.Request.GetPage = request.body;
 
+        this.logger.debug('Getting page...',{pageUrl: data.pageUrl})
         const page = await this.mainService.getPage(data.pageUrl);
 
         sendResponse({response, code: SuccessStatusCode.Success, status: 200, payload: page})

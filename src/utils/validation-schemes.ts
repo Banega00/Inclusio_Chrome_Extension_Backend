@@ -8,16 +8,17 @@ const Schemes:{[key:string]:{[key:string]:Zod.ZodObject<any>}} = {
     POST:{
         "/test": exampleMiddlewareValidationSchema,
         "/register": registerUserValidationSchema,
-        "/login": loginUserValidationSchema
+        "/login": loginUserValidationSchema,
+        "/page": getPageValidationSchema
     },
 
     GET:{
         "/example-path": exampleMiddlewareValidationSchema,
-        "/page": getPageValidationSchema
     },
 
     PUT:{
-        "/page": insertOrUpdatePageValidationSchema
+        "/page": insertOrUpdatePageValidationSchema,
+
     },
 
     DELETE:{

@@ -9,3 +9,5 @@ const mainController = new MainController();
 
 mainRouter.post('/page', errorWrapper(mainController.getPage))
 mainRouter.put('/page', errorWrapper(JWTService.authorizeJWT), errorWrapper(mainController.insertOrUpdatePage))
+
+mainRouter.post('/request-page', errorWrapper(JWTService.authorizeJWT), errorWrapper(mainController.requestPageForProcessing))

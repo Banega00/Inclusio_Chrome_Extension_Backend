@@ -20,9 +20,9 @@ export class UserRepository extends BaseRepository<UserEntity>{
         throw new Error("Method not implemented.");
     }
 
-    async findOne(filter: any, entityManager?: EntityManager | undefined): Promise<UserEntity | undefined>  {
+    async findOne(filter: any, entityManager?: EntityManager | undefined, options?: any): Promise<UserEntity | undefined>  {
         const manager = entityManager ?? dataSource.manager;
-        const user = await manager.findOne(UserEntity, {where: filter})
+        const user = await manager.findOne(UserEntity, {where: filter, ...options})
         if(user == undefined) return undefined;
         return user;
     }
@@ -34,6 +34,10 @@ export class UserRepository extends BaseRepository<UserEntity>{
         throw new Error("Method not implemented.");
     }
 
-    
+    async save(entity: UserEntity, entityManager?: EntityManager | undefined): Promise<UserEntity> {
+        const manager = entityManager ?? dataSource.manager;
+        await manager.save(entity);
+        return entity;
+    }
     
 }

@@ -33,11 +33,11 @@ export class MainController{
         const data: DTO.Request.GetPage = request.body;
 
         this.logger.debug('Getting page...',{pageUrl: data.pageUrl})
-        const page = await this.mainService.getPage(data.pageUrl);
+        const {page, requested} = await this.mainService.getPage(data.pageUrl, data.username);
 
         if(page) this.logger.debug(`Page found - id: ${page.id}`)
 
-        sendResponse({response, code: SuccessStatusCode.Success, status: 200, payload: page})
+        sendResponse({response, code: SuccessStatusCode.Success, status: 200, payload: {page, requested}})
     }
 
     requestPageForProcessing = async (request: Request, response: Response) =>{

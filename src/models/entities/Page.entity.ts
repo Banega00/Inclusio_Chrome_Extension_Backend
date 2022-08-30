@@ -17,7 +17,7 @@ export class PageEntity {
         [image_src: string]: string;
     }
 
-    @Column({type: 'enum', enum: PageStatus, nullable: true})
+    @Column({type: 'enum', enum: PageStatus, nullable: true, default: PageStatus.Not_Covered})
     status: PageStatus;
 
     @CreateDateColumn()

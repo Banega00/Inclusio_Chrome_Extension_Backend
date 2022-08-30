@@ -57,9 +57,9 @@ export class MainService{
     
         if(!page){
             page = new PageEntity({page_url: pageUrl, images_alt_text: {}, requests:[], status: PageStatus.Not_Covered})
-            page.requests.push(user);
         }
-
+        
+        page.requests.push(user);
         user.requests.push(page);
 
         await Promise.all([
@@ -79,6 +79,10 @@ export class MainService{
                 page.requests = []
                 requestedPages.push({page, requests: pageRequests})
             }
+        })
+
+        requestedPages.sort((a, b)=>{
+            return b.requests - a.requests
         })
 
         return requestedPages;

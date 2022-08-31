@@ -100,5 +100,7 @@ export class MainService{
         return requestedPages;
     }
 
-    
+    publishPage = async (pageUrl: string) =>{
+        await this.pageRepository.update({page_url: pageUrl}, {status: PageStatus.Covered})
+    }
 }

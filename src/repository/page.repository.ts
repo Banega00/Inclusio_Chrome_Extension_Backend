@@ -1,4 +1,4 @@
-import { EntityManager } from "typeorm";
+import { DeepPartial, EntityManager } from "typeorm";
 import { dataSource } from "../../main";
 import { PageEntity } from "../models/entities/Page.entity";
 import { BaseRepository } from "./base.repository";
@@ -26,8 +26,9 @@ export class PageRepository extends BaseRepository<PageEntity>{
         return page;
     }
 
-    async update(entity: PageEntity, entityManager?: EntityManager | undefined): Promise<PageEntity> {
-        throw new Error("Method not implemented.");
+    async update(filter: any, deepPartial: DeepPartial<PageEntity>, entityManager?: EntityManager | undefined): Promise<any> {
+        const manager = entityManager ?? dataSource.manager;
+        await manager.update(PageEntity, filter, deepPartial);
     }
     async delete(entity: PageEntity, entityManager?: EntityManager | undefined): Promise<PageEntity> {
         throw new Error("Method not implemented.");

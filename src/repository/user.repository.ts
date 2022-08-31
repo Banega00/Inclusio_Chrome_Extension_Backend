@@ -1,4 +1,4 @@
-import { EntityManager } from "typeorm";
+import { DeepPartial, EntityManager } from "typeorm";
 import { dataSource } from "../../main";
 import { UserEntity } from "../models/entities/User.entity";
 import { BaseRepository } from "./base.repository";
@@ -27,7 +27,7 @@ export class UserRepository extends BaseRepository<UserEntity>{
         return user;
     }
 
-    async update(entity: UserEntity, entityManager?: EntityManager | undefined): Promise<UserEntity> {
+    async update(filter: any, deepPartial: DeepPartial<UserEntity>, entityManager?: EntityManager | undefined): Promise<UserEntity> {
         throw new Error("Method not implemented.");
     }
     async delete(entity: UserEntity, entityManager?: EntityManager | undefined): Promise<UserEntity> {

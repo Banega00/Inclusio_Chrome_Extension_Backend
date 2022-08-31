@@ -60,4 +60,15 @@ export class MainController{
 
         sendResponse({response, status:200, code: SuccessStatusCode.Success, payload: pages})
     }
+
+    publishPage = async (request: Request, response: Response) =>{
+
+        const data: DTO.Request.PublishPage = request.body;
+
+        if(!response.locals.user || response.locals.user.role != 'Volunteer' ) throw new CustomError({message:"Forbidden", code: ErrorStatusCode.UNAUTHORIZED, status: 401})
+
+        await this.mainService.publishPage(data.pageUrl);
+
+        sendResponse({response, status:200, code: SuccessStatusCode.Success})
+    }
 }

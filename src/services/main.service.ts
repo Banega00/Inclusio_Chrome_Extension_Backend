@@ -1,4 +1,4 @@
-import { LessThan } from "typeorm";
+import { LessThan, Not } from "typeorm";
 import CustomError from "../errors/CustomError";
 import { PageEntity } from "../models/entities/Page.entity";
 import { PageStatus } from "../models/PageStatus.enum";
@@ -79,7 +79,10 @@ export class MainService{
 
 
     getRequestedPages = async ()=>{
-        const pages = await this.pageRepository.find({updated_at: LessThan(this.fiveMinsEarlier())}, undefined, {relations: ['requests']});
+        const pages = await this.pageRepository.find(
+            {updated_at: LessThan(this.fiveMinsEarlier()),
+            status: Not(PageStatus.Covered)}
+            , undefined, {relations: ['requests']});
 
         const requestedPages:{page: PageEntity, requests: number}[] = [];
         pages.forEach(page=>{

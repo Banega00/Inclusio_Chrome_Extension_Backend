@@ -1,3 +1,4 @@
+import { LessThan } from "typeorm";
 import CustomError from "../errors/CustomError";
 import { PageEntity } from "../models/entities/Page.entity";
 import { PageStatus } from "../models/PageStatus.enum";
@@ -13,7 +14,7 @@ export class MainService{
     constructor() {
         this.pageRepository = new PageRepository();
         this.userRepository = new UserRepository();
-        this.logger = new Logger();
+        this.logger = new Logger(this.constructor.name);
     }
 
     insertOrUpdatePage = async (pageUrl: string, altText: {[img_src: string]: string})=>{
@@ -25,6 +26,7 @@ export class MainService{
             for(const img_src in altText){
                 page.images_alt_text[img_src] = altText[img_src]
             }
+            page.updated_at = new Date();
             return await this.pageRepository.save(page)
         }
     }
@@ -36,7 +38,7 @@ export class MainService{
         if(!page) throw new CustomError({code: ErrorStatusCode.PAGE_NOT_FOUND, status: 404, message: 'Page not found', payload: { pageUrl }})
         
         let requested = false
-        this.logger.debug("Page", page)
+        // this.logger.debug("Page", page)
         if(page?.requests && username){
             requested = page.requests.some(request => request.username == username);
         }
@@ -68,9 +70,16 @@ export class MainService{
         ])
     }
 
+    fiveMinsEarlier = () => {
+        const fiveMins = new Date(Date.now() - 5*60*1000)
+        let tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+        let localISOTime = (new Date(fiveMins.getTime() - tzoffset)).toISOString()
+        return localISOTime
+    }
+
 
     getRequestedPages = async ()=>{
-        const pages = await this.pageRepository.find({}, undefined, {relations: ['requests']});
+        const pages = await this.pageRepository.find({updated_at: LessThan(this.fiveMinsEarlier())}, undefined, {relations: ['requests']});
 
         const requestedPages:{page: PageEntity, requests: number}[] = [];
         pages.forEach(page=>{

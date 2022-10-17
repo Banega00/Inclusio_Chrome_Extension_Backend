@@ -47,7 +47,7 @@ export class MainController{
 
         if(!user || user.role != UserRole.Consumer) throw new CustomError({status: 401, code: ErrorStatusCode.INVALID_JWT})
 
-        await this.mainService.requestPage(data.pageUrl, user.username);
+        await this.mainService.requestPage(data.pageUrl, data.pageTitle ,user.username);
 
         sendResponse({response, code: SuccessStatusCode.Success, status: 200})
     }

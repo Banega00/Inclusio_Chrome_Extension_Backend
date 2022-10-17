@@ -1,0 +1,16 @@
+PORT = 3000
+
+### DATABASE ###
+pg_host=localhost
+pg_port=5432
+pg_username=postgres
+pg_password=root
+pg_db_name=inclusio_extension_db
+
+# ORM Properties
+orm_synchronize=true
+orm_logging=true
+
+log_level=debug
+
+jwt_secret=gdpwdsgjskq

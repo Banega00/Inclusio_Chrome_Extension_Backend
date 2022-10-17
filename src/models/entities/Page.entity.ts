@@ -12,6 +12,9 @@ export class PageEntity {
     @Column({nullable: false})
     page_url: string;
 
+    @Column({nullable: false})
+    page_title: string;
+
     @Column({type: 'jsonb', default: {}})
     images_alt_text:{
         [image_src: string]: string;
@@ -35,6 +38,7 @@ export class PageEntity {
 
         if(obj.id) this.id = obj.id;
         if(obj.page_url) this.page_url = obj.page_url;
+        if(obj.page_title) this.page_title = obj.page_title;
         if(obj.images_alt_text) this.images_alt_text = obj.images_alt_text;
         if(obj.requests) this.requests = obj.requests;
         

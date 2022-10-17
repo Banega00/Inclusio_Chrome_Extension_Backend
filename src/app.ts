@@ -23,14 +23,7 @@ app.use(cookieParser())
 
 
 app.use(httpContext.middleware);
-app.use(errorWrapper((request: Request, response: Response, next: NextFunction) => {
-    const reqId = request.headers.reqid ?? randomString(6)
-    httpContext.set('ip', request.ip)
-    httpContext.set('reqId', reqId);
-    httpContext.set('startTime', Date.now());
-    httpContext.set('route', `${request.method.toUpperCase()} ${request.originalUrl}`);
-    next();
-}))
+app.use(Logger.logExpressRoute)
 
 
 //Logger for logging express route

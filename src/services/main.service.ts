@@ -48,7 +48,7 @@ export class MainService{
         return { page, requested };
     }
 
-    requestPage = async (pageUrl: string, username: string)=>{
+    requestPage = async (pageUrl: string, pageTitle: string, username: string)=>{
         let [user, page] = await Promise.all([
             await this.userRepository.findOne({username}, undefined, {relations: ['requests']}),
             await this.pageRepository.findOne({page_url: pageUrl}, undefined, {relations: ['requests']})
@@ -58,7 +58,7 @@ export class MainService{
         
     
         if(!page){
-            page = new PageEntity({page_url: pageUrl, images_alt_text: {}, requests:[], status: PageStatus.Not_Covered})
+            page = new PageEntity({page_url: pageUrl, page_title: pageTitle, images_alt_text: {}, requests:[], status: PageStatus.Not_Covered})
         }
         
         page.requests.push(user);

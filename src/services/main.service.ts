@@ -1,7 +1,9 @@
 import { LessThan, MoreThan, Not } from "typeorm";
 import CustomError from "../errors/CustomError";
 import { PageEntity } from "../models/entities/Page.entity";
+import { PageRequestEntity } from "../models/entities/PageRequest.entity";
 import { PageStatus } from "../models/PageStatus.enum";
+import { PageRequestRepository } from "../repository/page-request.repository";
 import { PageRepository } from "../repository/page.repository";
 import { UserRepository } from "../repository/user.repository";
 import { ErrorStatusCode } from "../status-codes";
@@ -10,10 +12,12 @@ import Logger from "../utils/Logger";
 export class MainService{
     private pageRepository: PageRepository;
     private userRepository: UserRepository;
+    private pageRequestRepository: PageRequestRepository;
     private logger: Logger;
     constructor() {
         this.pageRepository = new PageRepository();
         this.userRepository = new UserRepository();
+        this.pageRequestRepository = new PageRequestRepository();
         this.logger = new Logger(this.constructor.name);
     }
 
@@ -32,7 +36,7 @@ export class MainService{
     }
 
     getPage = async (pageUrl: string, username?: string)=>{
-        const page = await this.pageRepository.findOne({page_url: pageUrl}, undefined, username ? {relations: ['requests']} : {});
+        const page = await this.pageRepository.findOne({page_url: pageUrl}, undefined, username ? {relations: ['requests', 'requests.user']} : {});
 
         
         if(!page) throw new CustomError({code: ErrorStatusCode.PAGE_NOT_FOUND, status: 404, message: 'Page not found', payload: { pageUrl }})
@@ -40,7 +44,7 @@ export class MainService{
         let requested = false
         // this.logger.debug("Page", page)
         if(page?.requests && username){
-            requested = page.requests.some(request => request.username == username);
+            requested = page.requests.some(request => request.user.username == username);
         }
 
         page.requests = [];
@@ -61,13 +65,19 @@ export class MainService{
             page = new PageEntity({page_url: pageUrl, page_title: pageTitle, images_alt_text: {}, requests:[], status: PageStatus.Not_Covered})
         }
         
-        page.requests.push(user);
-        user.requests.push(page);
+        if(page.status == PageStatus.Covered) page.status = PageStatus.Not_Covered;
+
+        this.logger.debug(`Page status: ${page.status}`);
+
+        const pageRequest = new PageRequestEntity({user, page})
 
         await Promise.all([
             await this.userRepository.save(user),
-            await this.pageRepository.save(page)
+            await this.pageRepository.save(page),
+            await this.pageRequestRepository.save(pageRequest)
         ])
+
+        this.logger.debug(`After saving: ${page.status}`)
     }
 
     fiveMinsEarlier = () => {
@@ -81,8 +91,11 @@ export class MainService{
     getRequestedPages = async ()=>{
         const query = [
             { updated_at: LessThan(this.fiveMinsEarlier()), status: Not(PageStatus.Covered)},
-            { created_at: MoreThan(this.fiveMinsEarlier()), status: Not(PageStatus.Covered)}
+            { created_at: MoreThan(this.fiveMinsEarlier()), status: Not(PageStatus.Covered)},
+            { requests: { fulfilled: false } }
         ]
+
+
         const pages = await this.pageRepository.find(query, undefined, {relations: ['requests']})
 
         const requestedPages:{page: PageEntity, requests: number}[] = [];
@@ -102,6 +115,15 @@ export class MainService{
     }
 
     publishPage = async (pageUrl: string) =>{
-        await this.pageRepository.update({page_url: pageUrl}, {status: PageStatus.Covered})
+        const page = await this.pageRepository.findOne({page_url: pageUrl}, undefined, {relations:['requests']});
+
+        this.logger.debug(`Page found: ${page!=undefined}`)
+
+        if(!page) throw new CustomError({status:404, code: ErrorStatusCode.PAGE_NOT_FOUND, message:'Page not found'});
+
+        for(const request of page.requests){
+            await this.pageRequestRepository.update({id: request.id}, {fulfilled: true})
+        }
+        await this.pageRepository.update({page_url: pageUrl}, {status: PageStatus.Covered })
     }
 }

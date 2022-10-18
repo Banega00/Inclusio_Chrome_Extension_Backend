@@ -8,6 +8,7 @@ import { UserEntity } from "./src/models/entities/User.entity";
 import { PageEntity } from "./src/models/entities/Page.entity";
 import { env } from "./src/utils/env-wrapper";
 import Logger from "./src/utils/Logger";
+import { PageRequestEntity } from "./src/models/entities/PageRequest.entity";
 
 const logger = new Logger('Main');
 
@@ -21,7 +22,7 @@ export const dataSource = new DataSource({
     database: env.pg.database,
     synchronize: env.orm.synchronize,
     logging: env.orm.logging,
-    entities: [UserEntity, PageEntity]
+    entities: [UserEntity, PageEntity, PageRequestEntity]
   });
 
 (async function main(): Promise<void> {

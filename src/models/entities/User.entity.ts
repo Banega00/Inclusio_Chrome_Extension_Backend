@@ -1,6 +1,7 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { UserRole } from "../UserRole.enum";
 import { PageEntity } from "./Page.entity";
+import { PageRequestEntity } from "./PageRequest.entity";
 
 @Entity()
 export class UserEntity{
@@ -17,9 +18,9 @@ export class UserEntity{
     @Column({nullable: true, type: 'enum', enum: UserRole})
     role: UserRole
 
-    @ManyToMany(() => PageEntity)
+    @OneToMany(() => PageRequestEntity, (page_request) => page_request.user)
     @JoinTable()
-    requests: PageEntity[]
+    requests: PageRequestEntity[]
 
     constructor(obj?: Partial<UserEntity>) {
         if(!obj) return;

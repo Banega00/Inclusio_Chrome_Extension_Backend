@@ -1,6 +1,7 @@
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { PageStatus } from "../PageStatus.enum";
 import { UserRole } from "../UserRole.enum";
+import { PageRequestEntity } from "./PageRequest.entity";
 import { UserEntity } from "./User.entity";
 
 @Entity()
@@ -29,9 +30,9 @@ export class PageEntity {
     @UpdateDateColumn()
     updated_at: Date;
 
-    @ManyToMany(() => UserEntity)
+    @OneToMany(() => PageRequestEntity, (page_request) => page_request.page)
     @JoinTable()
-    requests: UserEntity[]
+    requests: PageRequestEntity[]
 
     constructor(obj?: Partial<PageEntity>) {
         if(!obj) return;

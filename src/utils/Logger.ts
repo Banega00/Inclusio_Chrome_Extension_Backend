@@ -73,7 +73,17 @@ export default class Logger{
     }
 
     static myFormat = winston.format.printf(({ level, message, timestamp, data, ip, reqId, label, otherMetadata, ...metadata }) => {
-        let msg:string = `${timestamp} | ${reqId ?? ''} | ${level} | ${label ?? ''}`
+        // let msg:string = ((Blogger.colorMap as any)[level] ?? ''); //initialize color
+
+        let msg = `${LoggerColor.White}`;
+
+        msg += `${timestamp} ` 
+        
+        msg += `| ${LoggerColor.Cyan}${reqId ?? ''}`
+        msg += `${((Logger.colorMap as any)[level])} | ${level.toUpperCase()} `
+        msg += `| ${LoggerColor.Yellow}${label ?? ''}${LoggerColor.White} `
+
+        msg += ((Logger.colorMap as any)[level]);
     
         if(otherMetadata){
             for(const prop in otherMetadata){
@@ -91,11 +101,9 @@ export default class Logger{
             msg += data
         }
     
-        msg = ((Logger.colorMap as any)[level] ?? '') + msg
     
         return msg
     });
-
     static randomString = (length: number) =>{
         return Math.random().toString(36).substring(2,length+2);
     }

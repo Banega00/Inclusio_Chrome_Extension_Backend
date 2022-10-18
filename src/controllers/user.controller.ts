@@ -22,7 +22,7 @@ export class UserController {
 
         this.logger.debug("Registering user")
 
-        const user = await this.userService.registerUser(data.username, data.password, data.role)
+        const user = await this.userService.registerUser(data.username, data.password, data.email, data.role)
 
         const jwt = jsonwebtoken.sign({ id: user.id, username: user.username, role: user.role }, env.jwt_secret);
 

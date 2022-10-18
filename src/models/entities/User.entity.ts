@@ -15,6 +15,9 @@ export class UserEntity{
     @Column({nullable: false})
     password: string
 
+    @Column({nullable: false})
+    email: string
+
     @Column({nullable: true, type: 'enum', enum: UserRole})
     role: UserRole
 
@@ -28,6 +31,7 @@ export class UserEntity{
         obj.id && (this.id = obj.id)
         obj.username && (this.username = obj.username)
         obj.password && (this.password = obj.password)
+        obj.email && (this.email = obj.email)
         obj.role && (this.role = obj.role)
     }
 }

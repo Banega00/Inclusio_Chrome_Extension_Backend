@@ -8,6 +8,7 @@ export enum ErrorStatusCode {
     INVALID_JWT = 10006,
     UNAUTHORIZED = 10007,
     PAGE_NOT_FOUND = 10008,
+    ERROR_SENDING_MAIL = 10009,
 }
 
 export enum SuccessStatusCode {
@@ -27,7 +28,8 @@ const ErrorStatusCodeDescription: { [key: number]: string } = {
     10005: "Missing token",
     10006: "Invalid token",
     10007: "Unauthorized",
-    10008: "Page not found"
+    10008: "Page not found",
+    10009: "Error sending mail"
 }
 
 const SuccessStatusCodeDescription: { [key: number]: string } = {

@@ -23,7 +23,7 @@ export class UserService{
         // this.logger.info('Example Service initialized')
     }
 
-    registerUser = async (username: string, password: string, role: UserRole) => {
+    registerUser = async (username: string, password: string, email:string, role: UserRole) => {
 
         const user = await this.userRepository.findOne({username})
 
@@ -31,11 +31,11 @@ export class UserService{
 
         const hashedPassword = hash(password);
 
-        const newUser = new UserEntity({username, password: hashedPassword, role})
+        const newUser = new UserEntity({username, email, password: hashedPassword, role})
 
         await this.userRepository.add(newUser);
 
-        this.logger.info('New user successfully registered', {id: newUser.id, username: newUser.username, role: newUser.role})
+        this.logger.info('New user successfully registered', {id: newUser.id, username: newUser.username, email: newUser.email, role: newUser.role})
 
         return newUser;
     }

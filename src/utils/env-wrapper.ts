@@ -6,6 +6,14 @@ class EnvWrapper {
     public use_fake_queue = this.toBoolean(this.getProperty('use_fake_queue'))
     public fake_queue_interval = this.toNumber(this.getProperty('fake_queue_interval'))
 
+    public mail = {
+        host: this.getProperty("mail_host"),
+        port: this.getProperty("mail_port"),
+        username: this.getProperty("mail_username"),
+        password: this.getProperty("mail_password"),
+
+    }
+
     public pg = {
         host: this.getProperty("pg_host"),
         port: this.toNumber(this.getProperty("pg_port")),

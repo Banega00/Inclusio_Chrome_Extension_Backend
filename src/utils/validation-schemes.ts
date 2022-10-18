@@ -5,6 +5,7 @@ import { loginUserValidationSchema } from "../models/dto/request/LoginUser.reque
 import { publishPageValidationSchema } from "../models/dto/request/PublishPage.request.dto";
 import { registerUserValidationSchema } from "../models/dto/request/RegisterUser.request.dto";
 import { requestPageValidationSchema } from "../models/dto/request/RequestPage.request.dto";
+import { updatePreferencesValidationSchema } from "../models/dto/request/UpdatePreferences.request.dto";
 
 const Schemes:{[key:string]:{[key:string]:Zod.ZodObject<any>}} = {
     POST:{
@@ -22,7 +23,7 @@ const Schemes:{[key:string]:{[key:string]:Zod.ZodObject<any>}} = {
 
     PUT:{
         "/page": insertOrUpdatePageValidationSchema,
-
+        "/preferences": updatePreferencesValidationSchema
     },
 
     DELETE:{

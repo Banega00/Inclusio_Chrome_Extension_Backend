@@ -21,6 +21,17 @@ export class UserEntity{
     @Column({nullable: true, type: 'enum', enum: UserRole})
     role: UserRole
 
+    @Column({type:'jsonb', default: {receiveMail:{onRequestedPagePublished: true, onPageRequest: true}}})
+    preferences: {
+        receiveMail:{
+            onRequestedPagePublished: boolean,
+            onPageRequest: boolean
+        } |
+        {
+            onPageRequest: boolean
+        }
+    }
+
     @OneToMany(() => PageRequestEntity, (page_request) => page_request.user)
     @JoinTable()
     requests: PageRequestEntity[]
@@ -33,5 +44,16 @@ export class UserEntity{
         obj.password && (this.password = obj.password)
         obj.email && (this.email = obj.email)
         obj.role && (this.role = obj.role)
+
+        
+        if(obj.preferences) this.preferences = obj.preferences
+        else{
+            if(this.role = UserRole.Volunteer){
+                this.preferences = {receiveMail:{onPageRequest: true}}
+
+            }else{
+                this.preferences = {receiveMail:{onRequestedPagePublished: true, onPageRequest: true}}
+            }
+        }
     }
 }

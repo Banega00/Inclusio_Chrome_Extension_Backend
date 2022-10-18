@@ -27,10 +27,7 @@ app.use(Logger.logExpressRoute)
 
 
 //Logger for logging express route
-app.use(errorWrapper((request: Request, response: Response, next: NextFunction) => {
-    logger.info(`Start of Request: ${httpContext.get('route')}`)
-    next();
-}))
+app.use(Logger.logExpressRoute)
 
 app.use('/health', (request, response) => sendResponse({response, status: 200, message: 'Server alive', code: SuccessStatusCode.Success}))
 

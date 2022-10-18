@@ -24,7 +24,7 @@ export class UserController {
 
         const user = await this.userService.registerUser(data.username, data.password, data.email, data.role)
 
-        const jwt = jsonwebtoken.sign({ id: user.id, username: user.username, role: user.role }, env.jwt_secret);
+        const jwt = jsonwebtoken.sign({ id: user.id, username: user.username, role: user.role, preferences: user.preferences }, env.jwt_secret);
 
         sendResponse({response, status:201, code: SuccessStatusCode.Success, message: `User successfully registered`, payload: {token: jwt}})
     }
@@ -34,11 +34,22 @@ export class UserController {
 
         const user = await this.userService.loginUser(data.username, data.password)
 
-        const jwt = jsonwebtoken.sign({ id: user.id, username: user.username, role: user.role }, env.jwt_secret);
+        const jwt = jsonwebtoken.sign({ id: user.id, username: user.username, preferences: user.preferences, role: user.role }, env.jwt_secret);
 
         response.cookie('token',jwt,{ maxAge: 1000 * 60 * 60 * 24, httpOnly: false });
 
         sendResponse({status:200, code: SuccessStatusCode.Success, response, payload: {token: jwt}})
+    }
+
+    updatePreferences = async (request: Request, response: Response, next: NextFunction) => {
+        const userData = response.locals.user;
+        const newPreferences: DTO.Request.UpdatePreferences = request.body;
+
+        const user = await this.userService.updatePreferences(userData.id, newPreferences);
+
+        const jwt = jsonwebtoken.sign({ id: user.id, username: user.username, role: user.role, preferences: user.preferences }, env.jwt_secret);
+
+        sendResponse({response, status: 200, code: SuccessStatusCode.Success, message: `Preferences successfully updated`, payload: {token: jwt}})
     }
 
     //If you wrapped middleware function with error wrapper - there is no need to use try/catch at top level

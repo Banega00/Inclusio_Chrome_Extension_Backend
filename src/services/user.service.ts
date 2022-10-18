@@ -11,7 +11,6 @@ import { sendResponse } from "../utils/response-wrapper";
 //This is Service
 //Its responsibility is to execute specific functions without knowledge of request, and response objects
 export class UserService{
-
     private logger:Logger;
     private httper: Httper;
     private userRepository: UserRepository;
@@ -63,5 +62,15 @@ export class UserService{
     testHttpMiddleware = async (data:any) =>{
         const response = await this.httper.get('/astros.json')
         return response;
+    }
+
+    updatePreferences = async (id: any, newPreferences: any) => {
+        const user = await this.userRepository.findOne({ id });
+
+        if(!user) throw new CustomError({code: ErrorStatusCode.USER_NOT_FOUND, status: 404, message: `User not found`})
+
+        user.preferences = newPreferences;
+
+        return await this.userRepository.save(user)
     }
 }

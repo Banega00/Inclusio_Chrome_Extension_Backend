@@ -15,7 +15,7 @@ export class MainController{
 
     constructor() {
         this.mainService = new MainService();
-        this.logger = new Logger('MainController')
+        this.logger = new Logger(this.constructor.name)
     }
 
     insertOrUpdatePage = async (request: Request, response: Response) =>{

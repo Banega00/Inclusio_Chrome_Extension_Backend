@@ -1,5 +1,6 @@
 import { createTransport, Transporter } from 'nodemailer'
 import CustomError from '../errors/CustomError';
+import { UserEntity } from '../models/entities/User.entity';
 import { ErrorStatusCode } from '../status-codes';
 import { env } from '../utils/env-wrapper';
 import Logger from '../utils/Logger';
@@ -25,12 +26,12 @@ export class MailingService {
     }
 
     sendMail = async (options:{
-        senderName:string, senderMail:string, 
+        senderName:string, 
         recipients: string[],
         subject: string, text: string, html: string}) => {
         try{
             await this.transporter.sendMail({
-                from: `"${options.senderName}" ${options.senderMail}`, // sender address
+                from: `"${options.senderName}" ${env.mail.username}`, // sender address
                 to: options.recipients.join(','), // list of receivers
                 subject: options.subject, // Subject line
                 text: options.text, // plain text body
@@ -43,7 +44,12 @@ export class MailingService {
             throw new CustomError({status: 500, code:ErrorStatusCode.ERROR_SENDING_MAIL, message: `Error sending mail`})
         }
     }
+
+    consumerRequestedPage = async(user: UserEntity, pageUrl: string) => {
+        this.logger.debug(`Sending mail to ${user.email}`)
+        await this.sendMail({senderName:`Inclusio`, recipients: [user.email], subject:'Page request confirmation', 
+        text:`Dear ${user.username}, you have successfully requested processing for the page on the following link: ${pageUrl}`,
+        html:`<div>Dear ${user.username}, you have successfully requested processing for the page on the following link: <a href="${pageUrl}">${pageUrl}</a><div>`})
+    }
 }
-
-
 

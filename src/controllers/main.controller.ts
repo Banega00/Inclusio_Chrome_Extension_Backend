@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import CustomError from "../errors/CustomError";
 import * as DTO from '../models/dto'
 import { UserRole } from "../models/UserRole.enum";
+import { MailingService } from "../services/mailing.service";
 import { MainService } from "../services/main.service";
 import { ErrorStatusCode, SuccessStatusCode } from "../status-codes";
 import Logger from "../utils/Logger";
@@ -10,11 +11,13 @@ import { sendResponse } from "../utils/response-wrapper";
 
 export class MainController{
     
-    private mainService:MainService;
+    private mainService: MainService;
+    private mailingService: MailingService;
     private logger: Logger;
 
     constructor() {
         this.mainService = new MainService();
+        this.mailingService = new MailingService();
         this.logger = new Logger(this.constructor.name)
     }
 
@@ -47,7 +50,7 @@ export class MainController{
 
         if(!user || user.role != UserRole.Consumer) throw new CustomError({status: 401, code: ErrorStatusCode.INVALID_JWT})
 
-        await this.mainService.requestPage(data.pageUrl, data.pageTitle ,user.username);
+        await this.mainService.requestPage(data.pageUrl, data.pageTitle , user.id);
 
         sendResponse({response, code: SuccessStatusCode.Success, status: 200})
     }

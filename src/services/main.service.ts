@@ -8,17 +8,20 @@ import { PageRepository } from "../repository/page.repository";
 import { UserRepository } from "../repository/user.repository";
 import { ErrorStatusCode } from "../status-codes";
 import Logger from "../utils/Logger";
+import { MailingService } from "./mailing.service";
 
 export class MainService{
     private pageRepository: PageRepository;
     private userRepository: UserRepository;
     private pageRequestRepository: PageRequestRepository;
+    private mailingService: MailingService;
     private logger: Logger;
     constructor() {
         this.pageRepository = new PageRepository();
         this.userRepository = new UserRepository();
         this.pageRequestRepository = new PageRequestRepository();
         this.logger = new Logger(this.constructor.name);
+        this.mailingService = new MailingService();
     }
 
     insertOrUpdatePage = async (pageUrl: string, altText: {[img_src: string]: string})=>{
@@ -52,13 +55,13 @@ export class MainService{
         return { page, requested };
     }
 
-    requestPage = async (pageUrl: string, pageTitle: string, username: string)=>{
+    requestPage = async (pageUrl: string, pageTitle: string, id: number)=>{
         let [user, page] = await Promise.all([
-            await this.userRepository.findOne({username}, undefined, {relations: ['requests']}),
+            await this.userRepository.findOne({id}, undefined, {relations: ['requests']}),
             await this.pageRepository.findOne({page_url: pageUrl}, undefined, {relations: ['requests']})
         ])
         
-        if(!user) throw new CustomError({code: ErrorStatusCode.USER_NOT_FOUND, status: 404, message: `User ${username} not found`})
+        if(!user) throw new CustomError({code: ErrorStatusCode.USER_NOT_FOUND, status: 404, message: `User ${id} not found`})
         
     
         if(!page){
@@ -76,6 +79,17 @@ export class MainService{
             await this.pageRepository.save(page),
             await this.pageRequestRepository.save(pageRequest)
         ])
+
+        //Sending mail
+        try{
+            this.logger.debug(`Sending email about page request`)
+
+            if(user.preferences?.receiveMail?.onPageRequest){
+                await this.mailingService.consumerRequestedPage(user, pageUrl);
+            }
+        }catch(error){
+            this.logger.error('Error sending email', error)
+        }
 
         this.logger.debug(`After saving: ${page.status}`)
     }

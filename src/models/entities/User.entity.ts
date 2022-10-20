@@ -48,7 +48,7 @@ export class UserEntity{
         
         if(obj.preferences) this.preferences = obj.preferences
         else{
-            if(this.role = UserRole.Volunteer){
+            if(this.role == UserRole.Volunteer){
                 this.preferences = {receiveMail:{onPageRequest: true}}
 
             }else{

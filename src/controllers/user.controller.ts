@@ -20,7 +20,7 @@ export class UserController {
     registerUser = async (request: Request, response: Response, next: NextFunction) => {
         const data: DTO.Request.RegisterUser = request.body;
 
-        this.logger.debug("Registering user")
+        this.logger.debug(`Register user request data:`, data)
 
         const user = await this.userService.registerUser(data.username, data.password, data.email, data.role)
 
@@ -31,6 +31,7 @@ export class UserController {
 
     loginUser = async (request: Request, response: Response, next: NextFunction) => {
         const data: DTO.Request.LoginUser = request.body;
+
 
         const user = await this.userService.loginUser(data.username, data.password)
 

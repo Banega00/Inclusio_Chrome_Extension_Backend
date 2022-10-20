@@ -2,7 +2,7 @@ import winston from "winston";
 import httpContext from 'express-http-context'
 import { Request, Response, NextFunction } from "express";
 
-export enum LoggerColor{
+export enum BloggerColor{
     Black = "\x1b[30m",
     Red = "\x1b[31m",
     Green = "\x1b[32m",
@@ -13,20 +13,20 @@ export enum LoggerColor{
     White = "\x1b[37m"
 }
 
-export default class Logger{
+export default class Blogger{
     private readonly instance: winston.Logger;
 
     public static colorMap = {
-        debug: LoggerColor.Blue, //blue
-        info: LoggerColor.Green, //green
-        warn: LoggerColor.Yellow, //yellow
-        error: LoggerColor.Red, //red
-        verbose: LoggerColor.Magenta //magenta
+        debug: BloggerColor.Blue, //blue
+        info: BloggerColor.Green, //green
+        warn: BloggerColor.Yellow, //yellow
+        error: BloggerColor.Red, //red
+        verbose: BloggerColor.Magenta //magenta
     }
 
-    public static setColors(obj:Partial<typeof Logger.colorMap>){
+    public static setColors(obj:Partial<typeof Blogger.colorMap>){
         for(const level in obj){
-            (Logger.colorMap as any)[level] = (obj as any)[level];
+            (Blogger.colorMap as any)[level] = (obj as any)[level];
         }
     }
     
@@ -43,7 +43,7 @@ export default class Logger{
                 winston.format.label({ label: moduleName }),
                 winston.format.timestamp({format:"YYYY-MM-DD HH:mm:ss.SSS"}),
                 winston.format.splat(),
-                Logger.myFormat,
+                Blogger.myFormat,
                 // addAppNameFormat(),
               )
         }))
@@ -75,16 +75,16 @@ export default class Logger{
     static myFormat = winston.format.printf(({ level, message, timestamp, data, ip, reqId, label, otherMetadata, ...metadata }) => {
         // let msg:string = ((Blogger.colorMap as any)[level] ?? ''); //initialize color
 
-        let msg = `${LoggerColor.White}`;
+        let msg = `${BloggerColor.White}`;
 
         msg += `${timestamp} ` 
         
-        msg += `| ${LoggerColor.Cyan}${reqId ?? ''}`
-        msg += `${((Logger.colorMap as any)[level])} | ${level.toUpperCase()} `
-        msg += `| ${LoggerColor.Yellow}${label ?? ''}${LoggerColor.White} `
+        msg += `| ${BloggerColor.Cyan}${reqId ?? ''}`
+        msg += `${((Blogger.colorMap as any)[level])} |${level.toUpperCase().padEnd(5)}`
+        msg += `| ${BloggerColor.Yellow}${label ?? ''}${BloggerColor.White}`
 
-        msg += ((Logger.colorMap as any)[level]);
-    
+        msg += ((Blogger.colorMap as any)[level]);
+
         if(otherMetadata){
             for(const prop in otherMetadata){
                 if(prop.startsWith('primitive')){
@@ -104,6 +104,7 @@ export default class Logger{
     
         return msg
     });
+
     static randomString = (length: number) =>{
         return Math.random().toString(36).substring(2,length+2);
     }
@@ -145,13 +146,13 @@ export default class Logger{
 
         httpContext.middleware(request, response, () => {
             //setup context parameters
-            const reqId = request.headers.reqid ?? Logger.randomString(6)
+            const reqId = request.headers.reqid ?? Blogger.randomString(6)
             httpContext.set('ip', request.ip)
             httpContext.set('reqId', reqId);
             httpContext.set('startTime', Date.now());
             httpContext.set('route', `${request.method.toUpperCase()} ${request.originalUrl}`);
 
-            const logger = new Logger('Request start')
+            const logger = new Blogger('Request start')
 
             logger.info(`${httpContext.get('route')}`)
 
@@ -159,7 +160,7 @@ export default class Logger{
             const oldResponseStatus = response.status.bind(response);
             //change response.status function to log end of response before sending
             response.status = (code: number) => {
-                const logger = new Logger('Request end')
+                const logger = new Blogger('Request end')
                 logger.info(`${Date.now() - httpContext.get('startTime')}msec | ${httpContext.get('route')} | status: ${code}`)
                 return oldResponseStatus(code);
             }
@@ -199,7 +200,7 @@ export default class Logger{
             data, 
             ip: httpContext.get('ip'), 
             reqId: httpContext.get('reqId'), 
-            microservice: 'KMS Node',
+            microservice: '',
             otherMetadata: {}
         }
 

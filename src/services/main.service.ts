@@ -8,10 +8,12 @@ import { PageRequestRepository } from "../repository/page-request.repository";
 import { PageRepository } from "../repository/page.repository";
 import { UserRepository } from "../repository/user.repository";
 import { ErrorStatusCode } from "../status-codes";
+import { env } from "../utils/env-wrapper";
 import Logger from "../utils/Logger";
 import { MailingService } from "./mailing.service";
 
 export class MainService{
+    
     private pageRepository: PageRepository;
     private userRepository: UserRepository;
     private pageRequestRepository: PageRequestRepository;
@@ -59,7 +61,7 @@ export class MainService{
     requestPage = async (pageUrl: string, pageTitle: string, id: number)=>{
         let [user, page] = await Promise.all([
             await this.userRepository.findOne({id}, undefined, {relations: ['requests']}),
-            await this.pageRepository.findOne({page_url: pageUrl}, undefined, {relations: ['requests']})
+            await this.pageRepository.findOne({page_url: pageUrl}, undefined, {relations: ['requests','requests.publisher']})
         ])
         
         if(!user) throw new CustomError({code: ErrorStatusCode.USER_NOT_FOUND, status: 404, message: `User ${id} not found`})
@@ -67,6 +69,27 @@ export class MainService{
     
         if(!page){
             page = new PageEntity({page_url: pageUrl, page_title: pageTitle, images_alt_text: {}, requests:[], status: PageStatus.Not_Covered})
+        }else{
+            //send email to volunteer that processed this page (latest one)
+            if(page.requests && page.requests.length > 0){
+                const sortedRequestById = page.requests.sort((a, b) => b.id - a.id);
+                let lastRequestWithPublisher = sortedRequestById.find(request => request.fulfilled);
+
+                if (lastRequestWithPublisher) {
+                    const { publisher } = lastRequestWithPublisher;
+
+                    //Sending mail
+                    try {
+                        this.logger.debug(`Sending email to notify volunteer that consumer requested improvements for page that he've processed`)
+
+                    if (publisher.preferences?.receiveMail?.onPageRequest) {
+                            await this.mailingService.improvementsRequested(user, pageUrl, publisher);
+                        }
+                    } catch (error) {
+                        this.logger.error('Error sending email', error)
+                    }
+                }
+            }
         }
         
         if(page.status == PageStatus.Covered) page.status = PageStatus.Not_Covered;
@@ -83,7 +106,7 @@ export class MainService{
 
         //Sending mail
         try{
-            this.logger.debug(`Sending email about page request`)
+            this.logger.debug(`Sending email to confirm consumer that page is requested for processing`)
 
             if(user.preferences?.receiveMail?.onPageRequest){
                 await this.mailingService.consumerRequestedPage(user, pageUrl);
@@ -99,7 +122,7 @@ export class MainService{
         const fiveMins = new Date(Date.now() - 5*60*1000)
         let tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
         let localISOTime = (new Date(fiveMins.getTime() - tzoffset)).toISOString()
-        return localISOTime
+        return localISOTime;
     }
 
 
@@ -137,16 +160,39 @@ export class MainService{
         if(!page) throw new CustomError({status:404, code: ErrorStatusCode.PAGE_NOT_FOUND, message:'Page not found'});
 
         for(const request of page.requests){
-            request.fulfilled = true;
-            request.publisher = new UserEntity({id: publisherId})
-            await this.pageRequestRepository.save(request)
-
             //check if consumer should be notified
             if(!request.fulfilled && (request.user?.preferences?.receiveMail as any)?.onRequestedPagePublished){
                 await this.mailingService.notifyConsumerAboutPublish(request.user, pageUrl);
             }
-            
+
+            request.fulfilled = true;
+            request.publisher = new UserEntity({id: publisherId})
+            await this.pageRequestRepository.save(request)
         }
         await this.pageRepository.update({page_url: pageUrl}, {status: PageStatus.Covered })
+    }
+
+    reportVolunteer = async(username: string, pageUrl: string, reasons: string[] | undefined) => {
+        const page = await this.pageRepository.findOne({page_url: pageUrl}, undefined, {relations: ['requests','requests.publisher']})
+
+        if(!page) throw new CustomError({ code: ErrorStatusCode.PAGE_NOT_FOUND, status: 404, message: 'Page not found'})
+    
+        if(page.requests && page.requests.length > 0){
+            const sortedRequestById = page.requests.sort((a, b) => b.id - a.id);
+            let lastRequestWithPublisher = sortedRequestById.find(request => request.fulfilled);
+
+            if(lastRequestWithPublisher){
+                //send mail to admin
+                const adminMail = env.admin_mail;
+
+                this.mailingService.reportVolunteerMail({
+                    adminMail,
+                    volunteerName: lastRequestWithPublisher.publisher.username,
+                    consumerName: username,
+                    pageUrl,
+                    reasons: reasons
+                })
+            }
+        }
     }
 }

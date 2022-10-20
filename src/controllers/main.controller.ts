@@ -72,4 +72,14 @@ export class MainController{
 
         sendResponse({response, status:200, code: SuccessStatusCode.Success})
     }
+
+    reportPage = async (request: Request, response: Response) => {
+        const data: DTO.Request.ReportVolunteer = request.body;
+
+        if(!response.locals.user || response.locals.user.role != 'Consumer' ) throw new CustomError({message:"Forbidden", code: ErrorStatusCode.UNAUTHORIZED, status: 401})
+    
+        await this.mainService.reportVolunteer(response.locals.user.username, data.pageUrl, data.reasons)
+
+        sendResponse({response, status:200, code: SuccessStatusCode.Success})
+    }
 }

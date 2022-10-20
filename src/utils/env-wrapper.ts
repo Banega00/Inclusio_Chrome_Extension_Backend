@@ -44,6 +44,8 @@ class EnvWrapper {
         },
     }
 
+    public admin_mail = this.getProperty("ADMIN_MAIL")
+
     public tiwlio = {
         account_sid: this.getProperty("TWILIO_ACCOUNT_SID"),
         auth_token: this.getProperty("TWILIO_AUTH_TOKEN"),

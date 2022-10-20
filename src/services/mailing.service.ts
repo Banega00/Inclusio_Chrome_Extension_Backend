@@ -5,7 +5,7 @@ import { ErrorStatusCode } from '../status-codes';
 import { env } from '../utils/env-wrapper';
 import Logger from '../utils/Logger';
 
-export class MailingService {
+export class MailingService {    
 
     private transporter: Transporter;
     private logger: Logger;
@@ -56,6 +56,19 @@ export class MailingService {
         await this.sendMail({senderName:`Inclusio`, recipients: [user.email], subject:"Page that you've requested has been processed!", 
         text:`Dear ${user.username}, we have processed requested page on the following link: ${pageUrl}`,
         html:`<div>Dear ${user.username}, we have processed requested page on the following link: <a href="${pageUrl}">${pageUrl}</a><div>`})
+    }
+
+    improvementsRequested = async (user: UserEntity, pageUrl: string, publisher: UserEntity) => {
+        await this.sendMail({senderName:`Inclusio`, recipients: [publisher.email], subject:"Consumer has requested improvements for your page", 
+        text:`Dear ${publisher.username}, consumer ${user.username} has requested improvements for page that you've processed: ${pageUrl}`,
+        html:`<div>Dear ${publisher.username}, consumer ${user.username} has requested improvements for page that you've processed: <a href="${pageUrl}">${pageUrl}</a><div>`})
+    }
+
+    reportVolunteerMail = async (obj: { adminMail: string; volunteerName: string; consumerName: string; pageUrl: string, reasons: string[] | undefined }) => {
+        const { adminMail, volunteerName, consumerName, reasons, pageUrl} = obj;
+        await this.sendMail({senderName:`Inclusio`, recipients: [adminMail], subject:"Consumer reported images descriptions for page", 
+        text:`Consumer ${consumerName} has reported images descriptions for page ${pageUrl} - last edit on this page was made by volunteer ${volunteerName} - reasons: ${reasons?.join('\n')}`,
+        html:`<div>Consumer ${consumerName} has reported images descriptions for page <a href="${pageUrl}">${pageUrl}</a> <br> Last edit on this page was made by ${volunteerName}.<div> <br> Reasons for report: ${reasons?.join('<br>')} `})
     }
 }
 

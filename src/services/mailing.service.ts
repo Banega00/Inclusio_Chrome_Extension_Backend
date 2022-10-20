@@ -51,5 +51,11 @@ export class MailingService {
         text:`Dear ${user.username}, you have successfully requested processing for the page on the following link: ${pageUrl}`,
         html:`<div>Dear ${user.username}, you have successfully requested processing for the page on the following link: <a href="${pageUrl}">${pageUrl}</a><div>`})
     }
+
+    notifyConsumerAboutPublish = async(user: UserEntity, pageUrl: string) =>{
+        await this.sendMail({senderName:`Inclusio`, recipients: [user.email], subject:"Page that you've requested has been processed!", 
+        text:`Dear ${user.username}, we have processed requested page on the following link: ${pageUrl}`,
+        html:`<div>Dear ${user.username}, we have processed requested page on the following link: <a href="${pageUrl}">${pageUrl}</a><div>`})
+    }
 }
 

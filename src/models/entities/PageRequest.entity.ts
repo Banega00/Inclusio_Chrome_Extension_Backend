@@ -16,6 +16,12 @@ export class PageRequestEntity {
     @ManyToOne(() => PageEntity, (page) => page.requests)
     page: PageEntity;
 
+    @ManyToOne(() => UserEntity, {nullable:  true})
+    publisher: UserEntity;
+
+    @Column({nullable: true})
+    publisherId: number;
+
     @Column({default: false})
     fulfilled: boolean;
 

@@ -2,6 +2,7 @@ import { LessThan, MoreThan, Not } from "typeorm";
 import CustomError from "../errors/CustomError";
 import { PageEntity } from "../models/entities/Page.entity";
 import { PageRequestEntity } from "../models/entities/PageRequest.entity";
+import { UserEntity } from "../models/entities/User.entity";
 import { PageStatus } from "../models/PageStatus.enum";
 import { PageRequestRepository } from "../repository/page-request.repository";
 import { PageRepository } from "../repository/page.repository";
@@ -128,15 +129,23 @@ export class MainService{
         return requestedPages;
     }
 
-    publishPage = async (pageUrl: string) =>{
-        const page = await this.pageRepository.findOne({page_url: pageUrl}, undefined, {relations:['requests']});
+    publishPage = async (pageUrl: string, publisherId: number) =>{
+        const page = await this.pageRepository.findOne({page_url: pageUrl}, undefined, {relations:['requests','requests.user']});
 
         this.logger.debug(`Page found: ${page!=undefined}`)
 
         if(!page) throw new CustomError({status:404, code: ErrorStatusCode.PAGE_NOT_FOUND, message:'Page not found'});
 
         for(const request of page.requests){
-            await this.pageRequestRepository.update({id: request.id}, {fulfilled: true})
+            request.fulfilled = true;
+            request.publisher = new UserEntity({id: publisherId})
+            await this.pageRequestRepository.save(request)
+
+            //check if consumer should be notified
+            if(!request.fulfilled && (request.user?.preferences?.receiveMail as any)?.onRequestedPagePublished){
+                await this.mailingService.notifyConsumerAboutPublish(request.user, pageUrl);
+            }
+            
         }
         await this.pageRepository.update({page_url: pageUrl}, {status: PageStatus.Covered })
     }

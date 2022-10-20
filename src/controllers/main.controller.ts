@@ -12,12 +12,10 @@ import { sendResponse } from "../utils/response-wrapper";
 export class MainController{
     
     private mainService: MainService;
-    private mailingService: MailingService;
     private logger: Logger;
 
     constructor() {
         this.mainService = new MainService();
-        this.mailingService = new MailingService();
         this.logger = new Logger(this.constructor.name)
     }
 
@@ -70,7 +68,7 @@ export class MainController{
 
         if(!response.locals.user || response.locals.user.role != 'Volunteer' ) throw new CustomError({message:"Forbidden", code: ErrorStatusCode.UNAUTHORIZED, status: 401})
 
-        await this.mainService.publishPage(data.pageUrl);
+        await this.mainService.publishPage(data.pageUrl, response.locals.user.id);
 
         sendResponse({response, status:200, code: SuccessStatusCode.Success})
     }

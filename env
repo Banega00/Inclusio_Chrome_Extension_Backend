@@ -14,3 +14,9 @@ orm_logging=true
 log_level=debug
 
 jwt_secret=gdpwdsgjskq
+
+
+mail_password = 
+mail_username = bane.stojanovic00@gmail.com
+
+admin_mail = bane.stojanovic00@gmail.com

@@ -6,6 +6,9 @@ export const insertOrUpdatePageValidationSchema = Zod.object({
     altText: Zod.object({
 
     }),
+    addedAltTexts: Zod.object({
+        
+    })
 })
 
 //type of dto request infered from validation schema

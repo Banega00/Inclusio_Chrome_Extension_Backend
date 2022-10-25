@@ -25,7 +25,7 @@ export class MainController{
 
         if(!user || user.role != UserRole.Volunteer) throw new CustomError({status: 401, code: ErrorStatusCode.UNAUTHORIZED})
 
-        await this.mainService.insertOrUpdatePage(data.pageUrl, data.altText)
+        await this.mainService.insertOrUpdatePage(user.id, data.pageUrl, data.altText, data.addedAltTexts)
 
         sendResponse({response, code: SuccessStatusCode.Success, status: 200})
     }

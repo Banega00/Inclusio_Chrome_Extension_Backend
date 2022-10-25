@@ -32,6 +32,9 @@ export class UserEntity{
         }
     }
 
+    @Column({default:0})
+    points: number;
+
     @OneToMany(() => PageRequestEntity, (page_request) => page_request.user)
     @JoinTable()
     requests: PageRequestEntity[]

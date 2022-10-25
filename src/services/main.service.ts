@@ -27,8 +27,15 @@ export class MainService{
         this.mailingService = new MailingService();
     }
 
-    insertOrUpdatePage = async (pageUrl: string, altText: {[img_src: string]: string})=>{
+    insertOrUpdatePage = async (userId: number, pageUrl: string, altText: {[img_src: string]: string}, addedAltTexts:{[img_src: string]: string})=>{
         const page = await this.pageRepository.findOne({page_url: pageUrl})
+        const user = await this.userRepository.findOne({id: userId});
+
+        const totalPoints = Object.values(addedAltTexts).reduce((prev, curr) => prev+curr.length,0)
+
+        user!.points += totalPoints;
+        
+        await this.userRepository.save(user!);
 
         if(!page){
             return await this.pageRepository.add(new PageEntity({page_url: pageUrl, images_alt_text: altText}))

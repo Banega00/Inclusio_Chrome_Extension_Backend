@@ -19,13 +19,18 @@ export class MainController{
         this.logger = new Logger(this.constructor.name)
     }
 
+    getRankList = async (request: Request, response: Response) =>{
+        const users = await this.mainService.getRankList();
+        sendResponse({response, code: SuccessStatusCode.Success, status: 200, payload: users})
+    }
+
     insertOrUpdatePage = async (request: Request, response: Response) =>{
         const data: DTO.Request.InsertOrUpdatePage = request.body;
         const user = response.locals.user;
 
         if(!user || user.role != UserRole.Volunteer) throw new CustomError({status: 401, code: ErrorStatusCode.UNAUTHORIZED})
 
-        await this.mainService.insertOrUpdatePage(user.id, data.pageUrl, data.altText, data.addedAltTexts)
+        await this.mainService.insertOrUpdatePage(user.id, data.pageUrl, data.pageTitle, data.altText, data.addedAltTexts)
 
         sendResponse({response, code: SuccessStatusCode.Success, status: 200})
     }

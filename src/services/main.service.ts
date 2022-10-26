@@ -4,6 +4,7 @@ import { PageEntity } from "../models/entities/Page.entity";
 import { PageRequestEntity } from "../models/entities/PageRequest.entity";
 import { UserEntity } from "../models/entities/User.entity";
 import { PageStatus } from "../models/PageStatus.enum";
+import { UserRole } from "../models/UserRole.enum";
 import { PageRequestRepository } from "../repository/page-request.repository";
 import { PageRepository } from "../repository/page.repository";
 import { UserRepository } from "../repository/user.repository";
@@ -27,18 +28,18 @@ export class MainService{
         this.mailingService = new MailingService();
     }
 
-    insertOrUpdatePage = async (userId: number, pageUrl: string, altText: {[img_src: string]: string}, addedAltTexts:{[img_src: string]: string})=>{
+    insertOrUpdatePage = async (userId: number, pageUrl: string, pageTitle: string, altText: {[img_src: string]: string}, addedAltTexts:{[img_src: string]: number})=>{
         const page = await this.pageRepository.findOne({page_url: pageUrl})
         const user = await this.userRepository.findOne({id: userId});
 
-        const totalPoints = Object.values(addedAltTexts).reduce((prev, curr) => prev+curr.length,0)
+        const totalPoints = Object.values(addedAltTexts).reduce((prev, curr) => prev+curr,0)
 
         user!.points += totalPoints;
         
         await this.userRepository.save(user!);
 
         if(!page){
-            return await this.pageRepository.add(new PageEntity({page_url: pageUrl, images_alt_text: altText}))
+            return await this.pageRepository.add(new PageEntity({page_url: pageUrl, page_title:pageTitle, images_alt_text: altText}))
         }else{
             for(const img_src in altText){
                 page.images_alt_text[img_src] = altText[img_src]
@@ -46,6 +47,11 @@ export class MainService{
             page.updated_at = new Date();
             return await this.pageRepository.save(page)
         }
+    }
+
+    getRankList = async () =>{
+        const volunteers = await this.userRepository.find({role: UserRole.Volunteer}, undefined, {order:{points:'DESC'}})
+        return volunteers
     }
 
     getPage = async (pageUrl: string, username?: string)=>{

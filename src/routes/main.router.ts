@@ -15,3 +15,6 @@ mainRouter.get('/requested-pages', errorWrapper(JWTService.authorizeJWT), errorW
 
 mainRouter.post('/publish-page', errorWrapper(JWTService.authorizeJWT), errorWrapper(mainController.publishPage))
 mainRouter.post('/report', errorWrapper(JWTService.authorizeJWT), errorWrapper(mainController.reportPage))
+
+mainRouter.get('/rank-list', errorWrapper(mainController.getRankList))
+
